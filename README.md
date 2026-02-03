@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-  <a href="AppStore/" download>
+  <a href="https://github.com/CodeShowOff/ScreenRecorder/releases/download/App/ScreenRecorder.apk" download>
     <img src="https://img.shields.io/badge/Download-APK-brightgreen?style=for-the-badge&logo=android" alt="Download APK" height="50"/>
   </a>
 </p>
@@ -162,7 +162,7 @@ Screen Recorder is a free, open-source Android application that allows you to re
 ## Installation
 
 ### Download APK
-Download the latest release APK: [ScreenRecorder.apk](AppStore/)
+Download the latest release APK: [ScreenRecorder.apk](https://github.com/CodeShowOff/ScreenRecorder/releases/download/App/ScreenRecorder.apk)
 
 ### From Source
 1. Clone the repository:
