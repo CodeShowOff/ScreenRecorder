@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Modern Screen Recorder App Icon
+  ~ Video camera icon with frame corners
+  -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Camera body -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M30,38 L62,38 L62,70 L30,70 Z" />
+    
+    <!-- Camera lens/circle -->
+    <path
+        android:fillColor="#3949AB"
+        android:pathData="M46,54 m-8,0 a8,8 0,1 1,16 0 a8,8 0,1 1,-16 0" />
+    
+    <!-- Camera viewfinder bump -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M62,44 L78,34 L78,64 L62,54 Z" />
+
+    <!-- Top-left corner frame -->
+    <path
+        android:strokeColor="#7986CB"
+        android:strokeWidth="2.5"
+        android:strokeLineCap="round"
+        android:pathData="M24,38 L24,28 L34,28" />
+
+    <!-- Top-right corner frame -->
+    <path
+        android:strokeColor="#7986CB"
+        android:strokeWidth="2.5"
+        android:strokeLineCap="round"
+        android:pathData="M84,28 L84,38 M84,28 L74,28" />
+
+    <!-- Bottom-left corner frame -->
+    <path
+        android:strokeColor="#7986CB"
+        android:strokeWidth="2.5"
+        android:strokeLineCap="round"
+        android:pathData="M24,70 L24,80 L34,80" />
+
+    <!-- Bottom-right corner frame -->
+    <path
+        android:strokeColor="#7986CB"
+        android:strokeWidth="2.5"
+        android:strokeLineCap="round"
+        android:pathData="M84,80 L84,70 M84,80 L74,80" />
+
+</vector>

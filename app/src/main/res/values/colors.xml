@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (c) 2016-2018. Vijai Chandra Prasad R.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see http://www.gnu.org/licenses
+  -->
+
+<resources>
+
+    <!-- App brand colors based on new logo -->
+    <color name="ic_launcher_background">#3949AB</color>
+
+    <color name="multiSelectColor">#503949AB</color>
+
+    <!-- Modern Light theme color resources -->
+    <color name="colorPrimary">#3949AB</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#536DFE</color>
+    <color name="colorSurface">#FFFFFF</color>
+    <color name="colorOnSurface">#1C1B1F</color>
+    <color name="colorOnPrimary">#FFFFFF</color>
+    <color name="colorBackground">#FAFAFA</color>
+    <color name="colorSecondary">#5C6BC0</color>
+    <color name="colorRipple">#1A3949AB</color>
+
+    <!-- Modern Dark theme color resources -->
+    <color name="colorPrimary_dark">#1E1E2E</color>
+    <color name="colorPrimaryDark_dark">#14141F</color>
+    <color name="textColorPrimary_dark">#E6E1E5</color>
+    <color name="colorAccent_dark">#7C8AFF</color>
+    <color name="windowBackground_dark">#1C1B1F</color>
+    <color name="navigationBarColor_dark">#14141F</color>
+    <color name="actionBarStyle_dark">#1E1E2E</color>
+    <color name="actionMode_background_dark">#1E1E2E</color>
+    <color name="colorSurface_dark">#2D2D3A</color>
+
+    <!-- Modern Black (AMOLED) theme color resources -->
+    <color name="colorPrimary_black">@android:color/black</color>
+    <color name="colorPrimaryDark_black">@android:color/black</color>
+    <color name="colorAccent_black">#7C8AFF</color>
+    <color name="windowBackground_black">@android:color/black</color>
+    <color name="popupBackground_black">#121212</color>
+    <color name="dialog_background_black">#0A0A0A</color>
+    <color name="actionMode_background_black">#000000</color>
+
+    <!-- Material White theme color resources -->
+    <color name="colorPrimaryWhite">#FFFFFF</color>
+    <color name="colorPrimaryDarkWhite">#F5F5F5</color>
+    <color name="colorAccentWhite">#3949AB</color>
+    <color name="actionBarStyle_white">#DE000000</color>
+    <color name="tabbarStyle_white">#DE000000</color>
+
+    <!-- FAB colors -->
+    <color name="fabBackground">#3949AB</color>
+    <color name="fabIcon">#FFFFFF</color>
+    <color name="fabRipple">#536DFE</color>
+
+    <!-- Status colors -->
+    <color name="recordingRed">#F44336</color>
+    <color name="successGreen">#4CAF50</color>
+</resources>

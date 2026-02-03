@@ -1,0 +1,95 @@
+/*
+ * Copyright (c) 2016-2018. Vijai Chandra Prasad R.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see http://www.gnu.org/licenses
+ */
+
+apply plugin: 'com.android.application'
+
+android {
+    namespace "com.orpheusdroid.screenrecorder"
+    compileSdk 35
+
+    defaultConfig {
+        applicationId "com.orpheusdroid.screenrecorder"
+        minSdk 31
+        targetSdk 35
+        versionCode 50
+        versionName "5.0.0"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    lint {
+        abortOnError false
+    }
+
+    signingConfigs {
+        // Always define a release signing config so `assembleRelease` works out-of-the-box.
+        // If no RELEASE_* properties are provided, we sign release builds with the debug keystore.
+        release {
+            if (project.hasProperty('RELEASE_STORE_FILE')) {
+                println 'Using release keys'
+                storeFile new File(RELEASE_STORE_FILE)
+                storePassword RELEASE_STORE_PASSWORD
+                keyAlias RELEASE_KEY_ALIAS
+                keyPassword RELEASE_KEY_PASSWORD
+            } else {
+                println 'Release keys not found. Using debug keystore for release build'
+                initWith signingConfigs.debug
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            lint {
+                disable 'MissingTranslation'
+            }
+            signingConfig signingConfigs.release
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    buildFeatures {
+        buildConfig true
+    }
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation 'androidx.constraintlayout:constraintlayout:2.2.1'
+    androidTestImplementation('androidx.test.espresso:espresso-core:3.7.0', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+    implementation 'androidx.appcompat:appcompat:1.7.1'
+    implementation 'com.google.android.material:material:1.13.0'
+    implementation 'androidx.cardview:cardview:1.0.0'
+    implementation 'androidx.core:core:1.15.0'
+    implementation 'androidx.activity:activity:1.9.3'
+    implementation 'androidx.fragment:fragment:1.8.5'
+    implementation 'androidx.preference:preference:1.2.1'
+    implementation 'androidx.documentfile:documentfile:1.0.1'
+    implementation 'life.knowledge4:k4l-video-trimmer:1.0'
+    implementation 'com.github.google:cameraview:3eaeac09a7f'
+    implementation 'com.github.MFlisar:changelog:1.1.2'
+    // REMOVED: libsu - no longer needed as app doesn't require root access
+
+    testImplementation 'junit:junit:4.13.2'
+}

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Modern notification icon
+  ~ Simple video camera silhouette
+  -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+
+    <!-- Camera body -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M4,6h10c1.1,0 2,0.9 2,2v8c0,1.1 -0.9,2 -2,2H4c-1.1,0 -2,-0.9 -2,-2V8c0,-1.1 0.9,-2 2,-2z" />
+
+    <!-- Camera lens/viewfinder -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M17,9l4,-3v12l-4,-3V9z" />
+
+</vector>

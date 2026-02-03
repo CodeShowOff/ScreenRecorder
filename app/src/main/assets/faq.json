@@ -1,0 +1,12 @@
+[
+  {
+    "question": "How do I record internal audio with Screen Recorder?",
+    "answer": "To record internal audio, go to Settings and select either <b>Internal Audio with Mic</b> or <b>Internal Audio</b> as the audio source. Internal Audio recording is supported on Android 10 and above using the native AudioPlaybackCapture API.",
+    "weight": 10
+  },
+  {
+    "question": "What is the difference between Internal Audio with Mic and Internal Audio?",
+    "answer": "<b>Internal Audio with Mic</b> records both the internal audio from your device and your microphone input. This is useful for commentary or narration.<br/><br/><b>Internal Audio</b> records only the internal audio from your device without any microphone input. This gives you clean audio from apps and games.",
+    "weight": 9
+  }
+]
