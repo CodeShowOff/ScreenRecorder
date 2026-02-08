@@ -252,12 +252,15 @@ public class VideoRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
                                 } else if (itemId == R.id.delete) {
                                     confirmDelete(holder.getAdapterPosition());
                                 } else if (itemId == R.id.edit) {
-                                    Toast.makeText(context, "Edit video for " + itemViewHolder.getAdapterPosition(), Toast.LENGTH_SHORT).show();
-
                                     Intent editIntent = new Intent(context, EditVideoActivity.class);
-                                    editIntent.putExtra(Const.VIDEO_EDIT_URI_KEY,
-                                            Uri.fromFile(video.getFile()).toString());
-                                    Log.d(Const.TAG, "Uri: " + Uri.fromFile(video.getFile()));
+                                    Uri videoUri;
+                                    if (video.isSAFFile()) {
+                                        videoUri = video.getUri();
+                                    } else {
+                                        videoUri = Uri.fromFile(video.getFile());
+                                    }
+                                    editIntent.putExtra(Const.VIDEO_EDIT_URI_KEY, videoUri.toString());
+                                    Log.d(Const.TAG, "Edit Uri: " + videoUri);
                                     videosListFragment.startActivityForResult(editIntent, Const.VIDEO_EDIT_REQUEST_CODE);
                                 }
                                 return true;

@@ -18,10 +18,15 @@
 package com.orpheusdroid.screenrecorder.ui;
 
 import android.app.ProgressDialog;
+import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.preference.PreferenceManager;
+import android.provider.DocumentsContract;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -30,6 +35,8 @@ import com.orpheusdroid.screenrecorder.R;
 
 import java.io.File;
 import java.util.ArrayList;
+
+import androidx.documentfile.provider.DocumentFile;
 
 import androidx.appcompat.app.AppCompatActivity;
 import life.knowledge4.videotrimmer.K4LVideoTrimmer;
@@ -51,7 +58,42 @@ public class EditVideoActivity extends AppCompatActivity implements OnTrimVideoL
 
         Uri videoUri = Uri.parse(getIntent().getStringExtra(Const.VIDEO_EDIT_URI_KEY));
 
-        if (!new File(videoUri.getPath()).exists()) {
+        // Check if video exists - handle both file:// and content:// URIs
+        boolean videoExists = false;
+        String destinationPath;
+        
+        if ("content".equals(videoUri.getScheme())) {
+            // SAF content URI
+            DocumentFile docFile = DocumentFile.fromSingleUri(this, videoUri);
+            videoExists = docFile != null && docFile.exists();
+            
+            // Try to get the real path from content URI
+            String realPath = getRealPathFromURI(videoUri);
+            
+            if (realPath != null && new File(realPath).exists()) {
+                // We have a real file path, use its parent directory
+                File videoFile = new File(realPath);
+                destinationPath = videoFile.getParent() + "/";
+                Log.d(Const.TAG, "Using parent directory of real path: " + destinationPath);
+            } else {
+                // Use the user's configured save location for edited videos
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+                File moviesDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES), "ScreenRecorder");
+                if (!moviesDir.exists()) {
+                    moviesDir.mkdirs();
+                }
+                String defaultSaveLocation = moviesDir.getAbsolutePath();
+                destinationPath = prefs.getString(getString(R.string.savelocation_key), defaultSaveLocation) + "/";
+                Log.d(Const.TAG, "Using configured save location: " + destinationPath);
+            }
+        } else {
+            // Regular file URI
+            File videoFile = new File(videoUri.getPath());
+            videoExists = videoFile.exists();
+            destinationPath = videoFile.getParent() + "/";
+        }
+
+        if (!videoExists) {
             Toast.makeText(this, getResources().getString(R.string.video_not_found), Toast.LENGTH_SHORT).show();
             finish();
             return;
@@ -66,13 +108,11 @@ public class EditVideoActivity extends AppCompatActivity implements OnTrimVideoL
         int timeInMins = (((int)Long.parseLong(time)) / 1000)+1000;
         Log.d(Const.TAG, timeInMins+"");
 
-        File video = new File(videoUri.getPath());
-
         videoTrimmer.setOnTrimVideoListener(this);
         videoTrimmer.setVideoURI(videoUri);
         videoTrimmer.setMaxDuration(timeInMins);
-        Log.d(Const.TAG, "Edited file save name: " + video.getAbsolutePath());
-        videoTrimmer.setDestinationPath(video.getParent()+"/");
+        Log.d(Const.TAG, "Edited file destination: " + destinationPath);
+        videoTrimmer.setDestinationPath(destinationPath);
     }
 
     @Override
@@ -115,6 +155,81 @@ public class EditVideoActivity extends AppCompatActivity implements OnTrimVideoL
                 finish();
             }
         });
+    }
+
+    /**
+     * Try to get the real file path from a content URI
+     * Works for MediaStore and some other content URIs
+     */
+    private String getRealPathFromURI(Uri contentUri) {
+        String result = null;
+        
+        try {
+            // Try to extract path from DocumentsContract URIs
+            if (DocumentsContract.isDocumentUri(this, contentUri)) {
+                String docId = DocumentsContract.getDocumentId(contentUri);
+                
+                // ExternalStorageProvider
+                if ("com.android.externalstorage.documents".equals(contentUri.getAuthority())) {
+                    final String[] split = docId.split(":");
+                    if (split.length >= 2) {
+                        final String type = split[0];
+                        if ("primary".equalsIgnoreCase(type)) {
+                            result = Environment.getExternalStorageDirectory() + "/" + split[1];
+                        }
+                    }
+                }
+                // MediaProvider
+                else if ("com.android.providers.media.documents".equals(contentUri.getAuthority())) {
+                    final String[] split = docId.split(":");
+                    if (split.length >= 2) {
+                        final String type = split[0];
+                        Uri mediaUri = null;
+                        if ("video".equals(type)) {
+                            mediaUri = android.provider.MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
+                        }
+                        
+                        if (mediaUri != null) {
+                            final String selection = "_id=?";
+                            final String[] selectionArgs = new String[]{split[1]};
+                            result = getDataColumn(mediaUri, selection, selectionArgs);
+                        }
+                    }
+                }
+            }
+            // Try regular MediaStore query for content:// URIs
+            else if ("content".equalsIgnoreCase(contentUri.getScheme())) {
+                result = getDataColumn(contentUri, null, null);
+            }
+        } catch (Exception e) {
+            Log.w(Const.TAG, "Failed to get real path from URI: " + e.getMessage());
+        }
+        
+        return result;
+    }
+
+    /**
+     * Get the value of the _data column for a content URI
+     */
+    private String getDataColumn(Uri uri, String selection, String[] selectionArgs) {
+        Cursor cursor = null;
+        final String column = "_data";
+        final String[] projection = {column};
+        
+        try {
+            cursor = getContentResolver().query(uri, projection, selection, selectionArgs, null);
+            if (cursor != null && cursor.moveToFirst()) {
+                final int columnIndex = cursor.getColumnIndexOrThrow(column);
+                return cursor.getString(columnIndex);
+            }
+        } catch (Exception e) {
+            Log.w(Const.TAG, "Failed to query data column: " + e.getMessage());
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+        return null;
     }
 
 }
