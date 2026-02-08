@@ -61,18 +61,19 @@ public class EditVideoActivity extends AppCompatActivity implements OnTrimVideoL
         // Check if video exists - handle both file:// and content:// URIs
         boolean videoExists = false;
         String destinationPath;
+        String realFilePath = null;  // This will be used for trimming
         
         if ("content".equals(videoUri.getScheme())) {
             // SAF content URI
             DocumentFile docFile = DocumentFile.fromSingleUri(this, videoUri);
             videoExists = docFile != null && docFile.exists();
             
-            // Try to get the real path from content URI
-            String realPath = getRealPathFromURI(videoUri);
+            // Try to get the real path from content URI - needed for video trimming
+            realFilePath = getRealPathFromURI(videoUri);
             
-            if (realPath != null && new File(realPath).exists()) {
+            if (realFilePath != null && new File(realFilePath).exists()) {
                 // We have a real file path, use its parent directory
-                File videoFile = new File(realPath);
+                File videoFile = new File(realFilePath);
                 destinationPath = videoFile.getParent() + "/";
                 Log.d(Const.TAG, "Using parent directory of real path: " + destinationPath);
             } else {
@@ -91,10 +92,18 @@ public class EditVideoActivity extends AppCompatActivity implements OnTrimVideoL
             File videoFile = new File(videoUri.getPath());
             videoExists = videoFile.exists();
             destinationPath = videoFile.getParent() + "/";
+            realFilePath = videoUri.getPath();  // For file:// URIs, the path is directly usable
         }
 
         if (!videoExists) {
             Toast.makeText(this, getResources().getString(R.string.video_not_found), Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
+        
+        // For SAF URIs without a real path, video trimming is not supported
+        if (realFilePath == null || !new File(realFilePath).exists()) {
+            Toast.makeText(this, "Video editing not supported for this storage location", Toast.LENGTH_LONG).show();
             finish();
             return;
         }
@@ -109,7 +118,9 @@ public class EditVideoActivity extends AppCompatActivity implements OnTrimVideoL
         Log.d(Const.TAG, timeInMins+"");
 
         videoTrimmer.setOnTrimVideoListener(this);
-        videoTrimmer.setVideoURI(videoUri);
+        // Use file:// URI for trimming - K4LVideoTrimmer requires actual file path for mp4parser
+        Uri fileUri = Uri.fromFile(new File(realFilePath));
+        videoTrimmer.setVideoURI(fileUri);
         videoTrimmer.setMaxDuration(timeInMins);
         Log.d(Const.TAG, "Edited file destination: " + destinationPath);
         videoTrimmer.setDestinationPath(destinationPath);
@@ -159,18 +170,33 @@ public class EditVideoActivity extends AppCompatActivity implements OnTrimVideoL
 
     /**
      * Try to get the real file path from a content URI
-     * Works for MediaStore and some other content URIs
+     * Works for MediaStore, DocumentProvider, and SAF tree URIs
      */
     private String getRealPathFromURI(Uri contentUri) {
         String result = null;
         
         try {
-            // Try to extract path from DocumentsContract URIs
-            if (DocumentsContract.isDocumentUri(this, contentUri)) {
-                String docId = DocumentsContract.getDocumentId(contentUri);
+            // Handle SAF tree URIs (e.g., content://com.android.externalstorage.documents/tree/.../document/...)
+            if ("com.android.externalstorage.documents".equals(contentUri.getAuthority())) {
+                String path = contentUri.getPath();
                 
-                // ExternalStorageProvider
-                if ("com.android.externalstorage.documents".equals(contentUri.getAuthority())) {
+                // Check for tree URI with document path
+                // Format: /tree/{treeId}/document/{docId}
+                if (path != null && path.contains("/document/")) {
+                    // Extract the document ID from the path
+                    int docIndex = path.lastIndexOf("/document/");
+                    String docPart = path.substring(docIndex + "/document/".length());
+                    
+                    // docPart is now something like "primary:Movies/ScreenRecorder/file.mp4"
+                    if (docPart.startsWith("primary:")) {
+                        String relativePath = docPart.substring("primary:".length());
+                        result = Environment.getExternalStorageDirectory() + "/" + relativePath;
+                        Log.d(Const.TAG, "Extracted path from SAF tree URI: " + result);
+                    }
+                }
+                // Standard document URI
+                else if (DocumentsContract.isDocumentUri(this, contentUri)) {
+                    String docId = DocumentsContract.getDocumentId(contentUri);
                     final String[] split = docId.split(":");
                     if (split.length >= 2) {
                         final String type = split[0];
@@ -179,8 +205,13 @@ public class EditVideoActivity extends AppCompatActivity implements OnTrimVideoL
                         }
                     }
                 }
+            }
+            // Try to extract path from other DocumentsContract URIs
+            else if (DocumentsContract.isDocumentUri(this, contentUri)) {
+                String docId = DocumentsContract.getDocumentId(contentUri);
+                
                 // MediaProvider
-                else if ("com.android.providers.media.documents".equals(contentUri.getAuthority())) {
+                if ("com.android.providers.media.documents".equals(contentUri.getAuthority())) {
                     final String[] split = docId.split(":");
                     if (split.length >= 2) {
                         final String type = split[0];

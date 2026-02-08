@@ -366,6 +366,13 @@ public class VideoRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
      * @see #shareVideos(ArrayList positions)
      */
     private void shareVideo(int position) {
+        // Validate position to prevent IndexOutOfBoundsException
+        if (position < 0 || position >= videos.size()) {
+            Log.e(Const.TAG, "Invalid position for share: " + position + ", list size: " + videos.size());
+            Toast.makeText(context, "Unable to share - please try again", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        
         Video video = videos.get(position);
         Uri fileUri;
         
@@ -434,6 +441,14 @@ public class VideoRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
      */
     private void deleteVideo(int position) {
         Log.d("Videos List", "delete position clicked: " + position);
+        
+        // Validate position to prevent IndexOutOfBoundsException
+        if (position < 0 || position >= videos.size()) {
+            Log.e(Const.TAG, "Invalid position for delete: " + position + ", list size: " + videos.size());
+            Toast.makeText(context, "Unable to delete - please try again", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        
         Video video = videos.get(position);
         boolean deleted = false;
         
